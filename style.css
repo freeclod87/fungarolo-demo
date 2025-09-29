@@ -1,0 +1,75 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+}
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #2c3e50;
+  color: white;
+  padding: 1rem;
+}
+
+.navbar a {
+  color: white;
+  text-decoration: none;
+  margin-left: 1rem;
+}
+
+.container {
+  padding: 2rem;
+  text-align: center;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.card {
+  border: 1px solid #ccc;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  margin-top: 1rem;
+  background: #3498db;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: #2980b9;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  max-width: 300px;
+  margin: 2rem auto;
+}
+
+.form input {
+  padding: 0.6rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+    /* Colori diversi per sezione */
+    body.guardie nav.navbar { background-color: #145214; } /* verde scuro */
+    body.rivenditori nav.navbar { background: #3a0066; } /* viola scuro */
+    body.admin nav.navbar { background-color: #1a3d66; } /* blu scuro "istituzionale" */
+    body.pubblico nav.navbar { background-color: #002244; } /* blu scuro "standard" */
+
+    

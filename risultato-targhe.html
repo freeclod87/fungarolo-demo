@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Risultato Controllo Targhe</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .ok { color: green; font-weight: bold; }
+    .ko { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="logo">Portale Guardie</div>
+    <ul>
+      <li><a href="guardie-home.html">Home</a></li>
+      <li><a href="controllo-targhe.html">Nuovo Controllo</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    <h1>Esito Verifica</h1>
+    <div id="risultato"></div>
+  </main>
+
+  <script>
+    const risultatoDiv = document.getElementById("risultato");
+    const secondi = new Date().getSeconds();
+
+    if (secondi % 2 === 0) {
+      risultatoDiv.innerHTML = "<p class='ok'>✅ Targa valida</p>";
+    } else {
+      risultatoDiv.innerHTML = "<p class='ko'>❌ Targa non trovata</p>";
+    }
+  </script>
+</body>
+</html>
