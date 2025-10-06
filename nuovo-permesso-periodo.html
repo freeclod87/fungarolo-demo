@@ -5,6 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nuovo Permesso - Periodo</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .table-preview {
+      margin-top: 1.5rem;
+      border-collapse: collapse;
+      width: 100%;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .table-preview th, .table-preview td {
+      border: 1px solid #ddd;
+      padding: 0.75rem 1rem;
+      text-align: left;
+      font-size: 0.95rem;
+    }
+    .table-preview th {
+      background-color: #f7f7f7;
+      font-weight: bold;
+    }
+    .stato-tutti {
+      color: #0a7a0a;
+      font-weight: 600;
+    }
+    .stato-residenti {
+      color: #005cba;
+      font-weight: 600;
+    }
+    .stato-nessuno {
+      color: #b50000;
+      font-weight: 600;
+    }
+    .disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .btn {
+      margin-top: 1rem;
+    }
+  </style>
 </head>
 <body class="rivenditori">
   <nav class="navbar">
@@ -16,15 +55,117 @@
 
   <main class="container">
     <h1>Definisci il Periodo di Validità</h1>
-    <form class="form" action="nuovo-permesso-cf.html" method="get">
+    <form class="form" action="nuovo-permesso-cf.html" method="get" id="permessoForm">
       <label for="inizio">Data Inizio</label>
       <input type="date" id="inizio" name="inizio" required>
-      
-      <label for="fine">Data Fine</label>
-      <input type="date" id="fine" name="fine" required>
 
-      <button type="submit" class="btn">Avanti</button>
+      <label for="tipo">Tipo di Permesso</label>
+      <select id="tipo" name="tipo" required>
+        <option value="">-- Seleziona un tipo --</option>
+        <option value="giornaliero">Giornaliero</option>
+        <option value="settimanale">Settimanale</option>
+        <option value="mensile">Mensile</option>
+        <option value="stagionale">Stagionale</option>
+      </select>
+
+      <div id="preview"></div>
+
+      <button type="submit" class="btn" id="submitBtn">Avanti</button>
     </form>
   </main>
+
+  <script>
+    const oggi = new Date().toISOString().split('T')[0];
+    const inizioInput = document.getElementById('inizio');
+    const tipoSelect = document.getElementById('tipo');
+    const previewDiv = document.getElementById('preview');
+    const submitBtn = document.getElementById('submitBtn');
+
+    // imposta data minima e default = oggi
+    inizioInput.value = oggi;
+    inizioInput.min = oggi;
+
+    const giorniSettimana = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"];
+
+    function chiPuoRaccogliere(dayIndex) {
+      switch (dayIndex) {
+        case 0: return { testo: "Tutti", classe: "stato-tutti" };
+        case 1: return { testo: "Solo Residenti", classe: "stato-residenti" };
+        case 2: return { testo: "Tutti", classe: "stato-tutti" };
+        case 3: return { testo: "Nessuno", classe: "stato-nessuno" };
+        case 4: return { testo: "Nessuno", classe: "stato-nessuno" };
+        case 5: return { testo: "Tutti", classe: "stato-tutti" };
+        case 6: return { testo: "Solo Residenti", classe: "stato-residenti" };
+      }
+    }
+
+    function calcolaGiorni(tipo) {
+      switch (tipo) {
+        case "giornaliero": return 1;
+        case "settimanale": return 7;
+        case "mensile": return 30;
+        case "stagionale": return 90;
+        default: return 0;
+      }
+    }
+
+    function aggiornaTabella() {
+      const dataInizio = inizioInput.value;
+      const tipo = tipoSelect.value;
+      previewDiv.innerHTML = "";
+      submitBtn.disabled = false;
+      submitBtn.classList.remove("disabled");
+
+      if (dataInizio && tipo) {
+        const giorni = calcolaGiorni(tipo);
+        const startDate = new Date(dataInizio);
+        let tableHTML = `
+          <table class="table-preview">
+            <tr>
+              <th>Data</th>
+              <th>Chi può raccogliere</th>
+            </tr>
+        `;
+
+        let tuttiVietati = true;
+
+        for (let i = 0; i < giorni; i++) {
+          const current = new Date(startDate);
+          current.setDate(startDate.getDate() + i);
+
+          const giornoSettimana = giorniSettimana[current.getDay()];
+          const dataStr = current.toLocaleDateString("it-IT");
+          const { testo, classe } = chiPuoRaccogliere(current.getDay());
+
+          if (testo !== "Nessuno") {
+            tuttiVietati = false;
+          }
+
+          tableHTML += `
+            <tr>
+              <td>${giornoSettimana} ${dataStr}</td>
+              <td class="${classe}">${testo}</td>
+            </tr>
+          `;
+        }
+
+        tableHTML += `</table>`;
+        previewDiv.innerHTML = tableHTML;
+
+        // Se tutti i giorni sono vietati, disabilita il tasto
+        if (tuttiVietati) {
+          submitBtn.disabled = true;
+          submitBtn.classList.add("disabled");
+        }
+      }
+    }
+
+    inizioInput.addEventListener("change", aggiornaTabella);
+    tipoSelect.addEventListener("change", aggiornaTabella);
+
+    // aggiorna tabella alla partenza
+    aggiornaTabella();
+  </script>
 </body>
 </html>
+
