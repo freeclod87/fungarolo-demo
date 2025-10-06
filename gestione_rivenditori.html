@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="it">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Rivenditori</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="admin">
+    <nav class="navbar">
+        <div class="logo">Portale Admin</div>
+        <ul>
+            <li><a href="admin-home.html">Home</a></li>
+            <li><a href="index.html">Logout</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+        <h1>Gestione Rivenditori</h1>
+
+        <div class="toolbar">
+            <input type="text" id="searchInput" placeholder="Cerca per nome, indirizzo o città...">
+            <a href="#" class="btn">Aggiungi nuovo rivenditore</a>
+        </div>
+
+        <table id="rivenditoriTable">
+            <thead>
+                <tr>
+                    <th>Nome Attività</th>
+                    <th>Indirizzo</th>
+                    <th>Città</th>
+                    <th>Azioni</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </main>
+
+    <!-- Modale -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" id="closeModal">&times;</span>
+            <h3 id="nomeAttivita"></h3>
+            <p><strong>Indirizzo:</strong> <span id="indirizzo"></span></p>
+            <p><strong>Città:</strong> <span id="citta"></span></p>
+            <p><strong>Email:</strong> email@esempio.xx</p>
+            <p><strong>Telefono:</strong> 12345678</p>
+
+            <h4>Dati di vendita (ultimi 7 giorni)</h4>
+            <table class="sales-table" id="salesTable">
+                <thead>
+                    <tr>
+                        <th>Giorno</th>
+                        <th>Vendite</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const rivenditori = [
+            { nome: "Alpe Market", indirizzo: "Via Roma 12", citta: "Asiago" },
+            { nome: "MontagnaShop", indirizzo: "Piazza Italia 3", citta: "Roana" },
+            { nome: "Funghi & Co.", indirizzo: "Via Verdi 9", citta: "Gallio" },
+            { nome: "Bottega del Bosco", indirizzo: "Via Stazione 4", citta: "Rotzo" },
+            { nome: "Sapori Locali", indirizzo: "Corso Trento 10", citta: "Enego" },
+            { nome: "Altopiano Store", indirizzo: "Via Veneto 5", citta: "Foza" },
+            { nome: "Erbe & Funghi", indirizzo: "Via Mazzini 8", citta: "Conco" },
+            { nome: "Dolomiti Market", indirizzo: "Via Alpini 2", citta: "Asiago" },
+            { nome: "BaitaShop", indirizzo: "Piazza Marconi 7", citta: "Gallio" },
+            { nome: "Bosco Point", indirizzo: "Via Monte Ortigara 15", citta: "Enego" },
+            { nome: "La Dispensa", indirizzo: "Via IV Novembre 6", citta: "Roana" },
+            { nome: "Monti & Valli", indirizzo: "Piazza San Marco 1", citta: "Foza" },
+        ];
+
+        const giorni = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
+
+        const tbody = document.querySelector("#rivenditoriTable tbody");
+
+        function generaTabella(dati) {
+            tbody.innerHTML = "";
+            dati.forEach((r, idx) => {
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+          <td>${r.nome}</td>
+          <td>${r.indirizzo}</td>
+          <td>${r.citta}</td>
+          <td><button class="btn" onclick="apriScheda(${idx})">Scheda</button></td>
+        `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        generaTabella(rivenditori);
+
+        // Filtro ricerca
+        document.getElementById("searchInput").addEventListener("keyup", function () {
+            const val = this.value.toLowerCase();
+            const filtrati = rivenditori.filter(r =>
+                r.nome.toLowerCase().includes(val) ||
+                r.indirizzo.toLowerCase().includes(val) ||
+                r.citta.toLowerCase().includes(val)
+            );
+            generaTabella(filtrati);
+        });
+
+        // Modale
+        const modal = document.getElementById("modal");
+        const closeModal = document.getElementById("closeModal");
+
+        function apriScheda(idx) {
+            const r = rivenditori[idx];
+            document.getElementById("nomeAttivita").textContent = r.nome;
+            document.getElementById("indirizzo").textContent = r.indirizzo;
+            document.getElementById("citta").textContent = r.citta;
+
+            // Genera dati casuali di vendita
+            const tbodyVendite = document.querySelector("#salesTable tbody");
+            tbodyVendite.innerHTML = "";
+            giorni.forEach(g => {
+                const v = Math.floor(Math.random() * 50) + 10;
+                const row = `<tr><td>${g}</td><td>${v}</td></tr>`;
+                tbodyVendite.insertAdjacentHTML("beforeend", row);
+            });
+
+            modal.style.display = "flex";
+        }
+
+        closeModal.addEventListener("click", () => modal.style.display = "none");
+        window.addEventListener("click", e => {
+            if (e.target === modal) modal.style.display = "none";
+        });
+    </script>
+</body>
+
+</html>

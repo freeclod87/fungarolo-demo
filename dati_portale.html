@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dati Portale</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="admin">
+  <nav class="navbar">
+    <div class="logo">Portale Admin</div>
+    <ul>
+      <li><a href="admin-home.html">Home</a></li>
+      <li><a href="index.html">Logout</a></li>
+    </ul>
+  </nav>
+
+  <main class="container">
+    <h1>Consultazione Dati</h1>
+
+    <div class="card">
+      <canvas id="permessiChart" style="max-height: 400px;"></canvas>
+    </div>
+
+    <div class="card">
+      <h2>Dati dettagliati</h2>
+      <table id="datiTable" class="styled-table">
+        <thead>
+          <tr>
+            <th>Giorno</th>
+            <th>Giornalieri</th>
+            <th>Settimanali</th>
+            <th>Mensili</th>
+            <th>Stagionali</th>
+            <th>Totale</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    // --- Dati statici ---
+    const giorni = ['Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica'];
+    const giornalieri = [10, 50, 0, 0, 66, 12, 80];
+    const settimanali = [20, 18, 18, 16, 22, 25, 0];
+    const mensili = [15, 15, 15, 15, 16, 16, 17];
+    const stagionali = [33, 33, 33, 34, 34, 35, 35];
+
+    // --- Costruzione grafico ---
+    const ctx = document.getElementById('permessiChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: giorni,
+        datasets: [
+          { label: 'Giornalieri', data: giornalieri, backgroundColor: '#4e79a7' },
+          { label: 'Settimanali', data: settimanali, backgroundColor: '#f28e2b' },
+          { label: 'Mensili', data: mensili, backgroundColor: '#e15759' },
+          { label: 'Stagionali', data: stagionali, backgroundColor: '#76b7b2' }
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: { x: { stacked: true }, y: { stacked: true, beginAtZero: true } },
+        plugins: {
+          legend: { position: 'bottom' },
+          title: { display: true, text: 'Andamento settimanale dei permessi' }
+        }
+      }
+    });
+
+    // --- Popolamento tabella ---
+    const tbody = document.querySelector('#datiTable tbody');
+    giorni.forEach((giorno, i) => {
+      const tot = (giornalieri[i] ?? 0) + (settimanali[i] ?? 0) + (mensili[i] ?? 0) + (stagionali[i] ?? 0);
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${giorno}</td>
+        <td>${giornalieri[i] ?? 0}</td>
+        <td>${settimanali[i] ?? 0}</td>
+        <td>${mensili[i] ?? 0}</td>
+        <td>${stagionali[i] ?? 0}</td>
+        <td><strong>${tot}</strong></td>
+      `;
+      tbody.appendChild(row);
+    });
+  </script>
+</body>
+</html>
