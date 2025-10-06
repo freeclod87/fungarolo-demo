@@ -1,50 +1,13 @@
 <!DOCTYPE html>
 <html lang="it">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nuovo Permesso - Periodo</title>
   <link rel="stylesheet" href="style.css">
-  <style>
-    .table-preview {
-      margin-top: 1.5rem;
-      border-collapse: collapse;
-      width: 100%;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .table-preview th, .table-preview td {
-      border: 1px solid #ddd;
-      padding: 0.75rem 1rem;
-      text-align: left;
-      font-size: 0.95rem;
-    }
-    .table-preview th {
-      background-color: #f7f7f7;
-      font-weight: bold;
-    }
-    .stato-tutti {
-      color: #0a7a0a;
-      font-weight: 600;
-    }
-    .stato-residenti {
-      color: #005cba;
-      font-weight: 600;
-    }
-    .stato-nessuno {
-      color: #b50000;
-      font-weight: 600;
-    }
-    .disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-    .btn {
-      margin-top: 1rem;
-    }
-  </style>
 </head>
+
 <body class="rivenditori">
   <nav class="navbar">
     <div class="logo">Portale Rivenditori</div>
@@ -81,7 +44,6 @@
     const previewDiv = document.getElementById('preview');
     const submitBtn = document.getElementById('submitBtn');
 
-    // imposta data minima e default = oggi
     inizioInput.value = oggi;
     inizioInput.min = oggi;
 
@@ -152,7 +114,6 @@
         tableHTML += `</table>`;
         previewDiv.innerHTML = tableHTML;
 
-        // Se tutti i giorni sono vietati, disabilita il tasto
         if (tuttiVietati) {
           submitBtn.disabled = true;
           submitBtn.classList.add("disabled");
@@ -163,9 +124,9 @@
     inizioInput.addEventListener("change", aggiornaTabella);
     tipoSelect.addEventListener("change", aggiornaTabella);
 
-    // aggiorna tabella alla partenza
+    // inizializza tabella
     aggiornaTabella();
   </script>
 </body>
-</html>
 
+</html>
