@@ -459,3 +459,37 @@ button.scheda:hover {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Navbar di base */
+.navbar {
+  color: white;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Colori specifici per ruolo */
+body.guardie .navbar {
+  background-color: #2e7d32;
+  /* verde bosco */
+}
+
+body.rivenditori .navbar {
+  background-color: #8c0b97;
+}
+
+body.admin .navbar {
+  background-color: #6a6b10;
+}
+
+/* Opzionale: link e hover coerenti */
+.navbar a {
+  color: white;
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+.navbar a:hover {
+  text-decoration: underline;
+}
