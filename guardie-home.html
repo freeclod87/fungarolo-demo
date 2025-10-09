@@ -5,6 +5,31 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portale Guardie</title>
   <link rel="stylesheet" href="style.css">
+  <style>
+    .info-box {
+      text-align: center;
+      margin: 1.5rem auto;
+      padding: 1rem;
+      background-color: #f4f4f4;
+      border-radius: 12px;
+      max-width: 600px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .info-box h2 {
+      margin: 0;
+      font-size: 1.4rem;
+    }
+    .info-box p {
+      margin: 0.5rem 0 0;
+      font-size: 1.1rem;
+    }
+    @media (max-width: 600px) {
+      .info-box {
+        padding: 0.8rem;
+        font-size: 0.95rem;
+      }
+    }
+  </style>
 </head>
 <body class="guardie">
   <nav class="navbar">
@@ -16,6 +41,11 @@
 
   <main class="container">
     <h1>Benvenuto nel Portale Guardie</h1>
+
+    <div class="info-box" id="info-box">
+      Caricamento orario raccolta...
+    </div>
+
     <div class="card-grid">
       <div class="card">
         <h2>Controllo Permesso</h2>
@@ -27,5 +57,62 @@
       </div>
     </div>
   </main>
+
+  <script>
+    function formattaData() {
+      const oggi = new Date();
+      const giorni = ["Domenica","Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato"];
+      const mesi = ["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"];
+      return `${giorni[oggi.getDay()]} ${oggi.getDate()} ${mesi[oggi.getMonth()]}`;
+    }
+
+    function mostraErrore(msg) {
+      document.getElementById("info-box").innerHTML = `
+        <h2>${formattaData()}</h2>
+        <p>${msg}</p>
+      `;
+    }
+
+    function aggiornaInfo(lat, lon) {
+      fetch(`https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&formatted=0`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.status !== "OK") {
+            mostraErrore("Impossibile recuperare gli orari di alba e tramonto.");
+            return;
+          }
+
+          // 🔧 FIX: corregge la conversione da UTC a locale
+          const albaUTC = new Date(data.results.sunrise);
+          const tramontoUTC = new Date(data.results.sunset);
+          const offsetLocale = (new Date()).getTimezoneOffset(); // minuti (es. -120 per CEST)
+
+          const alba = new Date(albaUTC.getTime() - offsetLocale * 60 * 1000);
+          const tramonto = new Date(tramontoUTC.getTime() - offsetLocale * 60 * 1000);
+
+          const inizio = new Date(alba.getTime() - 60 * 60 * 1000); // 1h prima
+          const fine = new Date(tramonto.getTime() + 60 * 60 * 1000); // 1h dopo
+
+          const oraInizio = inizio.toLocaleTimeString("it-IT", { hour: '2-digit', minute: '2-digit' });
+          const oraFine = fine.toLocaleTimeString("it-IT", { hour: '2-digit', minute: '2-digit' });
+
+          document.getElementById("info-box").innerHTML = `
+            <h2>${formattaData()}</h2>
+            <p>Raccolta permessa dalle <strong>${oraInizio}</strong> alle <strong>${oraFine}</strong></p>
+          `;
+        })
+        .catch(() => mostraErrore("Errore durante il recupero dei dati meteo."));
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        pos => aggiornaInfo(pos.coords.latitude, pos.coords.longitude),
+        () => mostraErrore("Impossibile determinare la posizione dell’utente.")
+      );
+    } else {
+      mostraErrore("Geolocalizzazione non supportata dal browser.");
+    }
+  </script>
 </body>
 </html>
+
